@@ -90,9 +90,10 @@ func listAzuredevopsProjects(vsc azuredevops.Client, _ AzuredevopsRemotePaginati
 	var mu sync.Mutex
 
 	for _, v := range accounts {
+		accountName := v.AccountName
 		g.Go(func() error {
 			args := azuredevops.GetProjectsArgs{
-				OrgId: v.AccountName,
+				OrgId: accountName,
 			}
 			projects, err := vsc.GetProjects(args)
 			if err != nil {
@@ -102,10 +103,10 @@ func listAzuredevopsProjects(vsc azuredevops.Client, _ AzuredevopsRemotePaginati
 			var tmp []dsmodels.DsRemoteApiScopeListEntry[models.AzuredevopsRepo]
 			for _, vv := range projects {
 				tmp = append(tmp, dsmodels.DsRemoteApiScopeListEntry[models.AzuredevopsRepo]{
-					Id:       v.AccountName + idSeparator + vv.Name,
+					Id:       accountName + idSeparator + vv.Name,
 					Type:     api.RAS_ENTRY_TYPE_GROUP,
 					Name:     vv.Name,
-					ParentId: &v.AccountName,
+					ParentId: &accountName,
 				})
 			}
 			mu.Lock()

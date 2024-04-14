@@ -56,9 +56,8 @@ func DecodeTaskOptions(options map[string]interface{}) (*AzuredevopsOptions, err
 
 type AzuredevopsParams struct {
 	OrganizationId string
-	ProjectId      string
 	RepositoryId   string
-	RepositoryType string
+	ProjectId      string
 }
 
 func (p *AzuredevopsOptions) GetParams() any {
@@ -66,6 +65,5 @@ func (p *AzuredevopsOptions) GetParams() any {
 		OrganizationId: p.OrganizationId,
 		ProjectId:      p.ProjectId,
 		RepositoryId:   p.RepositoryId,
-		RepositoryType: p.RepositoryType,
 	}
 }

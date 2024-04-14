@@ -179,7 +179,25 @@ func (c *Client) GetRepositories(args GetRepositoriesArgs) ([]Repository, errors
 	query := url.Values{}
 	query.Set("api-version", apiVersion)
 
+	var top, skip int
+	top = maxPageSize
+	skip = 0
+	if args.OffsetPagination != nil {
+		top = args.Top
+		skip = args.Skip
+	}
+
+	var data struct {
+		Count int          `json:"count"`
+		Repos []Repository `json:"value"`
+	}
+
+	var repos []Repository
+
 	for {
+		query.Set("$top", strconv.Itoa(top))
+		query.Set("$skip", strconv.Itoa(skip))
+
 		path := fmt.Sprintf("%s/%s/_apis/git/repositories", args.OrgId, args.ProjectId)
 		res, err := c.apiClient.Get(path, query, nil)
 		if err != nil {
@@ -196,14 +214,18 @@ func (c *Client) GetRepositories(args GetRepositoriesArgs) ([]Repository, errors
 		default:
 		}
 
-		var data struct {
-			Count int          `json:"count"`
-			Repos []Repository `json:"value"`
+		err = api.UnmarshalResponse(res, &data)
+		if err != nil {
+			return nil, err
 		}
 
-		err = api.UnmarshalResponse(res, &data)
-		return data.Repos, nil
+		repos = append(repos, data.Repos...)
 
+		if data.Count < top {
+			return repos, nil
+		}
+
+		skip += top
 	}
 }
 
@@ -237,6 +259,9 @@ func (c *Client) GetServiceEndpoints(args GetServiceEndpointsArgs) ([]ServiceEnd
 	}
 
 	err = api.UnmarshalResponse(res, &data)
+	if err != nil {
+		return nil, err
+	}
 	return data.ServiceEndpoints, nil
 }
 
