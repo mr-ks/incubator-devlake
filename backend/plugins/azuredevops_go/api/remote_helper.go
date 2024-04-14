@@ -36,6 +36,11 @@ const (
 	maxConcurrency = 10
 )
 
+type AzuredevopsRemotePagination struct {
+	Skip int
+	Top  int
+}
+
 // https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/?view=azure-devops
 // https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops
 var supportedSourceRepositories = []string{"github", "githubenterprise", "bitbucket", "git"}
