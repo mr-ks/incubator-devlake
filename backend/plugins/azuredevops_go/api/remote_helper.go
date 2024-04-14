@@ -107,10 +107,9 @@ func listAzuredevopsProjects(vsc azuredevops.Client, _ AzuredevopsRemotePaginati
 			var tmp []dsmodels.DsRemoteApiScopeListEntry[models.AzuredevopsRepo]
 			for _, vv := range projects {
 				tmp = append(tmp, dsmodels.DsRemoteApiScopeListEntry[models.AzuredevopsRepo]{
-					Id:       accountName + idSeparator + vv.Name,
-					Type:     api.RAS_ENTRY_TYPE_GROUP,
-					Name:     vv.Name,
-					ParentId: &accountName,
+					Id:   accountName + idSeparator + vv.Name,
+					Type: api.RAS_ENTRY_TYPE_GROUP,
+					Name: vv.Name,
 				})
 			}
 			mu.Lock()
