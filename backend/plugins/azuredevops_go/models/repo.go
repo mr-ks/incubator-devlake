@@ -29,6 +29,7 @@ type AzuredevopsRepo struct {
 	AzureDevOpsPK `mapstructure:",squash"`
 
 	Id        string `json:"id" validate:"required" mapstructure:"id" gorm:"primaryKey"`
+	Type      string `json:"type" validate:"required" mapstructure:"type"`
 	Name      string `json:"name" mapstructure:"name,omitempty"`
 	Url       string `json:"url" mapstructure:"url,omitempty"`
 	RemoteUrl string `json:"remoteUrl"`
