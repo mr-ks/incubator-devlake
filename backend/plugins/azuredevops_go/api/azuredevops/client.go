@@ -168,9 +168,6 @@ func (c *Client) GetProjects(args GetProjectsArgs) ([]Project, errors.Error) {
 }
 
 type GetRepositoriesArgs struct {
-	// (optional) Pagination
-	*OffsetPagination
-
 	OrgId     string
 	ProjectId string
 }
@@ -179,54 +176,32 @@ func (c *Client) GetRepositories(args GetRepositoriesArgs) ([]Repository, errors
 	query := url.Values{}
 	query.Set("api-version", apiVersion)
 
-	var top, skip int
-	top = maxPageSize
-	skip = 0
-	if args.OffsetPagination != nil {
-		top = args.Top
-		skip = args.Skip
-	}
-
 	var data struct {
-		Count int          `json:"count"`
 		Repos []Repository `json:"value"`
 	}
 
-	var repos []Repository
-
-	for {
-		query.Set("$top", strconv.Itoa(top))
-		query.Set("$skip", strconv.Itoa(skip))
-
-		path := fmt.Sprintf("%s/%s/_apis/git/repositories", args.OrgId, args.ProjectId)
-		res, err := c.apiClient.Get(path, query, nil)
-		if err != nil {
-			return nil, err
-		}
-
-		switch res.StatusCode {
-		case 401:
-			fallthrough
-		case 403:
-			return nil, errors.Unauthorized.New("failed to authorize the '.../_apis/git/repositories' request using the plugin connection")
-		case 404:
-			return nil, errors.NotFound.New("failed to find requested resource on '.../_apis/git/repositories'")
-		default:
-		}
-
-		err = api.UnmarshalResponse(res, &data)
-		if err != nil {
-			return nil, err
-		}
-
-		repos = append(repos, data.Repos...)
-
-		if data.Count < top {
-			return repos, nil
-		}
-
-		skip += top
+	path := fmt.Sprintf("%s/%s/_apis/git/repositories", args.OrgId, args.ProjectId)
+	res, err := c.apiClient.Get(path, query, nil)
+	if err != nil {
+		return nil, err
 	}
+
+	switch res.StatusCode {
+	case 401:
+		fallthrough
+	case 403:
+		return nil, errors.Unauthorized.New("failed to authorize the '.../_apis/git/repositories' request using the plugin connection")
+	case 404:
+		return nil, errors.NotFound.New("failed to find requested resource on '.../_apis/git/repositories'")
+	default:
+	}
+
+	err = api.UnmarshalResponse(res, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data.Repos, nil
 }
 
 type GetServiceEndpointsArgs struct {
