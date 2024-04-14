@@ -72,7 +72,6 @@ func listAzuredevopsRemoteScopes(
 		children = append(children, remote...)
 	}
 	return children, nextPage, nil
-
 }
 
 func listAzuredevopsProjects(vsc azuredevops.Client, _ AzuredevopsRemotePagination) (
