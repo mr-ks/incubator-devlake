@@ -84,8 +84,7 @@ func listAzuredevopsProjects(vsc azuredevops.Client, _ AzuredevopsRemotePaginati
 		return nil, nil, err
 	}
 
-	g, ctx := errgroup.WithContext(context.Background())
-	_ = ctx
+	g, _ := errgroup.WithContext(context.Background())
 	g.SetLimit(maxConcurrency)
 
 	var mu sync.Mutex
@@ -185,8 +184,7 @@ func listRemoteRepos(
 	var mu sync.Mutex
 	var remoteRepos []azuredevops.RemoteRepository
 
-	g, ctx := errgroup.WithContext(context.Background())
-	_ = ctx
+	g, _ := errgroup.WithContext(context.Background())
 	g.SetLimit(maxConcurrency)
 
 	for _, v := range endpoints {
