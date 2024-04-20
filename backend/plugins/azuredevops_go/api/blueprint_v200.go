@@ -18,6 +18,7 @@ limitations under the License.
 package api
 
 import (
+	"golang.org/x/exp/slices"
 	"net/url"
 
 	"github.com/apache/incubator-devlake/core/errors"
@@ -128,7 +129,6 @@ func makePipelinePlanV200(
 		azuredevopsRepo, scopeConfig := scope.Scope, scope.ScopeConfig
 		var stage coreModels.PipelineStage
 		var err errors.Error
-		// get repo
 
 		options := make(map[string]interface{})
 		options["connectionId"] = connection.ID
@@ -138,7 +138,20 @@ func makePipelinePlanV200(
 		options["repositoryType"] = azuredevopsRepo.Type
 
 		// construct subtasks
-		subtasks, err := helper.MakePipelinePlanSubtasks(subtaskMetas, scopeConfig.Entities)
+		var entities []string
+		if scope.Scope.Type == models.RepositoryTypeADO {
+			entities = append(entities, scopeConfig.Entities...)
+		} else {
+			if i := slices.Index(scopeConfig.Entities, plugin.DOMAIN_TYPE_CICD); i >= 0 {
+				entities = append(entities, scopeConfig.Entities[i])
+			}
+
+			if i := slices.Index(scopeConfig.Entities, plugin.DOMAIN_TYPE_CODE); i >= 0 && !scope.Scope.IsPrivate {
+				entities = append(entities, scopeConfig.Entities[i])
+			}
+		}
+
+		subtasks, err := helper.MakePipelinePlanSubtasks(subtaskMetas, entities)
 		if err != nil {
 			return nil, err
 		}
@@ -155,7 +168,10 @@ func makePipelinePlanV200(
 			if err != nil {
 				return nil, err
 			}
-			cloneUrl.User = url.UserPassword("git", connection.Token)
+
+			if scope.Scope.Type == models.RepositoryTypeADO {
+				cloneUrl.User = url.UserPassword("git", connection.Token)
+			}
 			stage = append(stage, &coreModels.PipelineTask{
 				Plugin: "gitextractor",
 				Options: map[string]interface{}{
