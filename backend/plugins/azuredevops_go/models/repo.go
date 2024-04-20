@@ -34,6 +34,7 @@ type AzuredevopsRepo struct {
 	Url       string `json:"url" mapstructure:"url,omitempty"`
 	RemoteUrl string `json:"remoteUrl"`
 	IsFork    bool
+	IsPrivate bool
 }
 
 func (repo AzuredevopsRepo) ScopeId() string {

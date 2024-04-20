@@ -27,6 +27,7 @@ import (
 	"github.com/apache/incubator-devlake/plugins/azuredevops_go/models"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/errgroup"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -148,7 +149,7 @@ func listAzuredevopsRepos(
 		pID := orgId + idSeparator + projectId
 		repo := models.AzuredevopsRepo{
 			Id:        v.Id,
-			Type:      "TfsGit",
+			Type:      models.RepositoryTypeADO,
 			Name:      v.Name,
 			Url:       v.Url,
 			RemoteUrl: v.RemoteUrl,
@@ -218,14 +219,19 @@ func listRemoteRepos(
 
 	for _, v := range remoteRepos {
 		pID := orgId + idSeparator + projectId
+		isFork, _ := strconv.ParseBool(v.Properties.IsFork)
+		isPrivate, _ := strconv.ParseBool(v.Properties.IsPrivate)
+
 		repo := models.AzuredevopsRepo{
 			Id:        v.Id,
 			Type:      v.SourceProviderName,
 			Name:      v.Name,
 			Url:       v.Url,
 			RemoteUrl: v.Properties.CloneUrl,
-			IsFork:    false,
+			IsFork:    isFork,
+			IsPrivate: isPrivate,
 		}
+
 		repo.ProjectId = projectId
 		repo.OrganizationId = orgId
 		children = append(children, dsmodels.DsRemoteApiScopeListEntry[models.AzuredevopsRepo]{

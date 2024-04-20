@@ -70,13 +70,15 @@ func makeScopeV200(
 
 	for _, scope := range scopeDetails {
 		azuredevopsRepo, scopeConfig := scope.Scope, scope.ScopeConfig
+		if azuredevopsRepo.Type != models.RepositoryTypeADO {
+			continue
+		}
 		id := didgen.NewDomainIdGenerator(&models.AzuredevopsRepo{}).Generate(connectionId, azuredevopsRepo.Id)
 
 		if utils.StringsContains(scopeConfig.Entities, plugin.DOMAIN_TYPE_CODE_REVIEW) ||
 			utils.StringsContains(scopeConfig.Entities, plugin.DOMAIN_TYPE_CODE) {
 			// if we don't need to collect gitex, we need to add repo to scopes here
 			scopeRepo := code.NewRepo(id, azuredevopsRepo.Name)
-
 			sc = append(sc, scopeRepo)
 		}
 
@@ -90,6 +92,26 @@ func makeScopeV200(
 		if utils.StringsContains(scopeConfig.Entities, plugin.DOMAIN_TYPE_TICKET) {
 			scopeTicket := ticket.NewBoard(id, azuredevopsRepo.Name)
 			sc = append(sc, scopeTicket)
+		}
+	}
+
+	for _, scope := range scopeDetails {
+		azuredevopsRepo, scopeConfig := scope.Scope, scope.ScopeConfig
+		if azuredevopsRepo.Type == models.RepositoryTypeADO {
+			continue
+		}
+		id := didgen.NewDomainIdGenerator(&models.AzuredevopsRepo{}).Generate(connectionId, azuredevopsRepo.Id)
+
+		// Azure DevOps Pipeline can be used with remote repositories such as GitHub and Bitbucket
+		if utils.StringsContains(scopeConfig.Entities, plugin.DOMAIN_TYPE_CICD) {
+			scopeCICD := devops.NewCicdScope(id, azuredevopsRepo.Name)
+			sc = append(sc, scopeCICD)
+		}
+
+		// DOMAIN_TYPE_CODE (i.e. gitextractor, rediff) only works if the repository is public
+		if !azuredevopsRepo.IsPrivate && utils.StringsContains(scopeConfig.Entities, plugin.DOMAIN_TYPE_CODE) {
+			scopeRepo := code.NewRepo(id, azuredevopsRepo.Name)
+			sc = append(sc, scopeRepo)
 		}
 	}
 

@@ -24,20 +24,21 @@ import (
 	"github.com/apache/incubator-devlake/helpers/migrationhelper"
 )
 
-type addRepoType struct{}
+type extendRepoTable struct{}
 
 type ExtendAzuredevopsRepo struct {
 	ConnectionId uint64 `gorm:"primaryKey"`
 	Id           string `gorm:"primaryKey;column:id"`
 
-	Type string `json:"type" gorm:"type:varchar(100)"`
+	Type      string `json:"type" gorm:"type:varchar(100)"`
+	IsPrivate bool   `json:"is_private" gorm:"type:bool"`
 }
 
 func (ExtendAzuredevopsRepo) TableName() string {
 	return "_tool_azuredevops_go_repos"
 }
 
-func (*addRepoType) Up(baseRes context.BasicRes) errors.Error {
+func (*extendRepoTable) Up(baseRes context.BasicRes) errors.Error {
 	err := migrationhelper.AutoMigrateTables(baseRes, &ExtendAzuredevopsRepo{})
 	if err != nil {
 		return err
@@ -48,10 +49,10 @@ func (*addRepoType) Up(baseRes context.BasicRes) errors.Error {
 		dal.Where("type IS NULL"))
 }
 
-func (*addRepoType) Version() uint64 {
+func (*extendRepoTable) Version() uint64 {
 	return 20240413100000
 }
 
-func (*addRepoType) Name() string {
-	return "add repo type to support remote repositories"
+func (*extendRepoTable) Name() string {
+	return "add [Type, IsPrivate] to _tool_azuredevops_go_repos in order to support remote repositories"
 }

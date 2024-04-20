@@ -19,6 +19,7 @@ package tasks
 
 import (
 	"encoding/json"
+	"github.com/apache/incubator-devlake/plugins/azuredevops_go/models"
 	"net/url"
 	"strconv"
 	"time"
@@ -48,7 +49,7 @@ func CollectBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 	repoId := data.Options.RepositoryId
 	repoType := data.Options.RepositoryType
 	if repoType == "" {
-		repoType = "TfsGit"
+		repoType = models.RepositoryTypeADO
 	}
 
 	collector, err := api.NewStatefulApiCollectorForFinalizableEntity(api.FinalizableApiCollectorArgs{
