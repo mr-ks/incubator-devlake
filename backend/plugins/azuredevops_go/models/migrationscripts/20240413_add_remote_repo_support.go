@@ -30,8 +30,8 @@ type ExtendAzuredevopsRepo struct {
 	ConnectionId uint64 `gorm:"primaryKey"`
 	Id           string `gorm:"primaryKey;column:id"`
 
-	Type      string `json:"type" gorm:"type:varchar(100)"`
-	IsPrivate bool   `json:"is_private" gorm:"type:bool"`
+	Type      string `gorm:"type:varchar(100)"`
+	IsPrivate bool
 }
 
 func (ExtendAzuredevopsRepo) TableName() string {
@@ -44,9 +44,18 @@ func (*extendRepoTable) Up(baseRes context.BasicRes) errors.Error {
 		return err
 	}
 
-	return baseRes.GetDal().UpdateColumn(
+	err = baseRes.GetDal().UpdateColumn(
 		&ExtendAzuredevopsRepo{}, "type", "TfsGit",
 		dal.Where("type IS NULL"))
+
+	if err != nil {
+		return err
+	}
+
+	return baseRes.GetDal().UpdateColumn(
+		&ExtendAzuredevopsRepo{}, "is_private", false,
+		dal.Where("is_private IS NULL"))
+
 }
 
 func (*extendRepoTable) Version() uint64 {
@@ -54,5 +63,5 @@ func (*extendRepoTable) Version() uint64 {
 }
 
 func (*extendRepoTable) Name() string {
-	return "add [Type, IsPrivate] to _tool_azuredevops_go_repos in order to support remote repositories"
+	return "add [type, is_private] to _tool_azuredevops_go_repos in order to support remote repositories"
 }
