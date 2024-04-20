@@ -113,6 +113,7 @@ func makePipelinePlanV200(
 		options["organizationId"] = azuredevopsRepo.OrganizationId
 		options["projectId"] = azuredevopsRepo.ProjectId
 		options["repositoryId"] = azuredevopsRepo.Id
+		options["repositoryType"] = azuredevopsRepo.Type
 
 		// construct subtasks
 		subtasks, err := helper.MakePipelinePlanSubtasks(subtaskMetas, scopeConfig.Entities)
