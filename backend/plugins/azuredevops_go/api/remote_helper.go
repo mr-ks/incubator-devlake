@@ -222,16 +222,22 @@ func listRemoteRepos(
 		pID := orgId + idSeparator + projectId
 		isFork, _ := strconv.ParseBool(v.Properties.IsFork)
 		isPrivate, _ := strconv.ParseBool(v.Properties.IsPrivate)
+
+		// IDs must not contain URL reserved characters (e.g., "/"), as this breaks the routing in the scope API.
+		// Accessing /plugins/azuredevops_go/connections/<id>/apache/incubator-devlake results in a 404 error, where
+		// "apache/incubator-devlake" is the repository ID returned by ADOs sourceProviders API.
+		// Therefore, we are creating our own ID, by combining the Service Connection and the External ID
 		remoteId := fmt.Sprintf("%s-%s", v.Properties.ConnectedServiceId, v.Properties.ExternalId)
 
 		repo := models.AzuredevopsRepo{
-			Id:        remoteId,
-			Type:      v.SourceProviderName,
-			Name:      v.Name,
-			Url:       v.Url,
-			RemoteUrl: v.Properties.CloneUrl,
-			IsFork:    isFork,
-			IsPrivate: isPrivate,
+			Id:         remoteId,
+			Type:       v.SourceProviderName,
+			Name:       v.Name,
+			Url:        v.Url,
+			RemoteUrl:  v.Properties.CloneUrl,
+			ExternalId: v.Id,
+			IsFork:     isFork,
+			IsPrivate:  isPrivate,
 		}
 
 		repo.ProjectId = projectId

@@ -47,9 +47,13 @@ var CollectBuildsMeta = plugin.SubTaskMeta{
 func CollectBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 	rawDataSubTaskArgs, data := CreateRawDataSubTaskArgs(taskCtx, RawBuildTable)
 	repoId := data.Options.RepositoryId
+	if data.Options.RepositoryType != models.RepositoryTypeADO {
+		repoId = data.Options.ExternalId
+	}
 	repoType := data.Options.RepositoryType
 	if repoType == "" {
 		repoType = models.RepositoryTypeADO
+		taskCtx.GetLogger().Warn(nil, "repository type for repoId: %v not found. falling back to TfsGit", repoId)
 	}
 
 	collector, err := api.NewStatefulApiCollectorForFinalizableEntity(api.FinalizableApiCollectorArgs{

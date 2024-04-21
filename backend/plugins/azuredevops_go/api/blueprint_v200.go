@@ -134,6 +134,7 @@ func makePipelinePlanV200(
 		options["connectionId"] = connection.ID
 		options["organizationId"] = azuredevopsRepo.OrganizationId
 		options["projectId"] = azuredevopsRepo.ProjectId
+		options["externalId"] = azuredevopsRepo.ExternalId
 		options["repositoryId"] = azuredevopsRepo.Id
 		options["repositoryType"] = azuredevopsRepo.Type
 

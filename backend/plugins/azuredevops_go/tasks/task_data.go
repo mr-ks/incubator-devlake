@@ -32,6 +32,7 @@ type AzuredevopsOptions struct {
 	OrganizationId string `json:"organizationId" mapstructure:"organizationId,omitempty"`
 	RepositoryId   string `json:"repositoryId"  mapstructure:"repositoryId,omitempty"`
 	RepositoryType string `json:"repositoryType"  mapstructure:"repositoryType,omitempty"`
+	ExternalId     string `json:"externalId"  mapstructure:"externalId,omitempty"`
 
 	ScopeConfigId uint64                         `json:"scopeConfigId" mapstructure:"scopeConfigId,omitempty"`
 	TimeAfter     string                         `json:"timeAfter" mapstructure:"timeAfter,omitempty"`

@@ -30,8 +30,9 @@ type ExtendAzuredevopsRepo struct {
 	ConnectionId uint64 `gorm:"primaryKey"`
 	Id           string `gorm:"primaryKey;column:id"`
 
-	Type      string `gorm:"type:varchar(100)"`
-	IsPrivate bool
+	Type       string `gorm:"type:varchar(100)"`
+	IsPrivate  bool
+	ExternalId string `gorm:"type:varchar(255)"`
 }
 
 func (ExtendAzuredevopsRepo) TableName() string {
@@ -63,5 +64,5 @@ func (*extendRepoTable) Version() uint64 {
 }
 
 func (*extendRepoTable) Name() string {
-	return "add [type, is_private] to _tool_azuredevops_go_repos in order to support remote repositories"
+	return "add [type, is_private, external_id] to _tool_azuredevops_go_repos in order to support remote repositories"
 }
