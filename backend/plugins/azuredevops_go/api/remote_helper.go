@@ -19,6 +19,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/helpers/pluginhelper/api"
@@ -221,9 +222,10 @@ func listRemoteRepos(
 		pID := orgId + idSeparator + projectId
 		isFork, _ := strconv.ParseBool(v.Properties.IsFork)
 		isPrivate, _ := strconv.ParseBool(v.Properties.IsPrivate)
+		remoteId := fmt.Sprintf("%s-%s", v.Properties.ConnectedServiceId, v.Properties.ExternalId)
 
 		repo := models.AzuredevopsRepo{
-			Id:        v.Id,
+			Id:        remoteId,
 			Type:      v.SourceProviderName,
 			Name:      v.Name,
 			Url:       v.Url,
