@@ -148,11 +148,13 @@ func TestMakeDataSourcePipelinePlanV200(t *testing.T) {
 					tasks.ExtractApiBuildsMeta.Name,
 				},
 				Options: map[string]interface{}{
+					"name":           azureDevOpsProjectName,
 					"connectionId":   connectionID,
 					"projectId":      azureDevOpsProjectName,
 					"repositoryId":   fmt.Sprint(azuredevopsRepoId),
 					"organizationId": azureDevOpsOrgName,
 					"repositoryType": models.RepositoryTypeADO,
+					"externalId":     "",
 				},
 			},
 			{
@@ -180,7 +182,7 @@ func TestMakeDataSourcePipelinePlanV200(t *testing.T) {
 	assert.Equal(t, expectPlans, actualPlans)
 }
 
-func TestMakeScope1s(t *testing.T) {
+func TestMakeRemoteRepoScopes(t *testing.T) {
 	mockAzuredevopsPlugin(t)
 
 	data := []struct {
