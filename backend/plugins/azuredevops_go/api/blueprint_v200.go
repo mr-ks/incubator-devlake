@@ -131,6 +131,8 @@ func makePipelinePlanV200(
 		var err errors.Error
 
 		options := make(map[string]interface{})
+		options["name"] = azuredevopsRepo.Name // this is solely for the FE to display the repo name of a task
+
 		options["connectionId"] = connection.ID
 		options["organizationId"] = azuredevopsRepo.OrganizationId
 		options["projectId"] = azuredevopsRepo.ProjectId
