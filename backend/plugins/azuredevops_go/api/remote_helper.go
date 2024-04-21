@@ -232,8 +232,8 @@ func listRemoteRepos(
 		repo := models.AzuredevopsRepo{
 			Id:         remoteId,
 			Type:       v.SourceProviderName,
-			Name:       v.Name,
-			Url:        v.Url,
+			Name:       v.SourceProviderName + idSeparator + v.FullName,
+			Url:        v.Properties.ManageUrl,
 			RemoteUrl:  v.Properties.CloneUrl,
 			ExternalId: v.Id,
 			IsFork:     isFork,
@@ -247,7 +247,7 @@ func listRemoteRepos(
 			ParentId: &pID,
 			Id:       v.Id,
 			Name:     v.Name,
-			FullName: v.Name,
+			FullName: v.FullName,
 			Data:     &repo,
 		})
 	}
